@@ -37,8 +37,8 @@ class Product(models.Model):
         verbose_name = "Product"
 
 class PriceHistoryManager(models.Manager):
-    def price_history(self, pid):
-        return self.get_queryset().filter(product__pid = pid)
+    def price_history(self, product):
+        return self.get_queryset().filter(product__pid=product.pid)
 
 class PriceHistory(models.Model):
     product = models.ForeignKey(Product)

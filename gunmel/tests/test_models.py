@@ -2,9 +2,10 @@ from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 from django.test import TestCase
 from django.utils import timezone
-from gunmel.models import Product,PriceHistory,ClickLog
+from gunmel.models import Product, PriceHistory, ClickLog
 
 
+# create products and populate price history (via signal)
 def populate_prod_db():
     Product.objects.create(pid=1,url="1",
                                img="1",headline="1",
@@ -18,6 +19,7 @@ def populate_prod_db():
                                img="3",headline="3",
                                desc="3",price=6,
                                price_drop=0,last_modified=timezone.now())
+
 
 class ProductTestCase(TestCase):
     def setUp(self):
@@ -63,24 +65,17 @@ class ProductTestCase(TestCase):
 class PriceHistoryTestCase(TestCase):
     def setUp(self):
         populate_prod_db()
-        p1 = Product.objects.get(pid=1)
-        PriceHistory.objects.create(product=p1, price=p1.price, timestamp=timezone.now())
-        p2 = Product.objects.get(pid=2)
-        PriceHistory.objects.create(product=p2, price=p2.price, timestamp=timezone.now())
-        p3 = Product.objects.get(pid=3)
-        PriceHistory.objects.create(product=p3, price=p3.price, timestamp=timezone.now())
 
     def test_price_history(self):
         for product in Product.objects.all():
-            self.assertEquals(len(PriceHistory.objects.price_history(product.pid)), 1)
+            self.assertEquals(len(PriceHistory.objects.price_history(product)), 1)
 
         p1 = Product.objects.get(pid=1)
         p1.price = 50
         p1.last_modified = timezone.now()
-        p1.save()
-        PriceHistory.objects.create(product=p1, price=p1.price, timestamp=timezone.now())
+        p1.save(update_fields=['price', 'last_modified'])
 
-        self.assertEquals(len(PriceHistory.objects.price_history(p1.pid)), 2)
+        self.assertEquals(len(PriceHistory.objects.price_history(p1)), 2)
 
     def test_foreign_key(self):
         p4 = Product(pid=4, url='4', img='4',
