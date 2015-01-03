@@ -10,6 +10,7 @@ class ProductManager(models.Manager):
     def top_clicks(self, n):
         return self.get_queryset().annotate(clicks=models.Count('clicklog')).order_by('-clicks')[:n]
 
+
 class Product(models.Model):
     pid = models.IntegerField(primary_key=True, verbose_name="Product ID")  # generated using murmur3 on url
     url = models.URLField(max_length=2000, verbose_name="Product URL")
@@ -19,7 +20,7 @@ class Product(models.Model):
     vendor = models.CharField(max_length=128)
     price = models.DecimalField(max_digits=9, decimal_places=2, verbose_name="Product Price")
     price_drop = models.IntegerField(verbose_name="Product Price Drop Percentage",
-                                     db_index=True)
+                                     db_index=True, default=0)
     last_modified = models.DateTimeField(verbose_name="Last modified time")
 
     objects = ProductManager()
@@ -33,12 +34,26 @@ class Product(models.Model):
     def __str__(self):
         return self.headline
 
+    # only save if price changes
+    def save(self, **kwargs):
+        if Product.objects.filter(pid=self.pid).exists():
+            current = Product.objects.get(pid=self.pid)
+            if current.price != self.price:
+                if current.price > self.price:
+                    self.price_drop = int((float(current.price) - float(self.price)) / float(current.price) * 100)
+                self.clean()
+                super(Product, self).save(**kwargs)
+        else:
+            self.clean()
+            super(Product, self).save(**kwargs)
+
     class Meta:
         verbose_name = "Product"
 
 class PriceHistoryManager(models.Manager):
     def price_history(self, product):
         return self.get_queryset().filter(product__pid=product.pid)
+
 
 class PriceHistory(models.Model):
     product = models.ForeignKey(Product)
