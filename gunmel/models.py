@@ -1,5 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.db import models
+from decimal import Decimal
 
 
 # Create your models here.
@@ -39,14 +40,17 @@ class Product(models.Model):
     def save(self, **kwargs):
         if Product.objects.filter(pid=self.pid).exists():
             current = Product.objects.get(pid=self.pid)
-            if current.price != self.price:
-                if current.price > self.price:
-                    self.price_drop = int((float(current.price) - float(self.price)) / float(current.price) * 100)
+            new_price = Decimal("%.2f" % self.price)
+            if current.price != new_price:
+                if current.price > new_price:
+                    self.price_drop = int((current.price - new_price) / current.price * 100)
                 self.clean()
                 super(Product, self).save(**kwargs)
+
         else:
             self.clean()
             super(Product, self).save(**kwargs)
+
 
     class Meta:
         verbose_name = "Product"
