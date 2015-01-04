@@ -43,7 +43,8 @@ class Migration(migrations.Migration):
                 ('desc', models.TextField(max_length=1024, verbose_name=b'Product Description')),
                 ('vendor', models.CharField(max_length=128)),
                 ('price', models.DecimalField(verbose_name=b'Product Price', max_digits=9, decimal_places=2)),
-                ('price_drop', models.IntegerField(verbose_name=b'Product Price Drop Percentage', db_index=True)),
+                ('price_drop', models.IntegerField(default=0, verbose_name=b'Product Price Drop Percentage', db_index=True)),
+                ('oos', models.BooleanField(default=False, verbose_name=b'Product Out of Stock')),
                 ('last_modified', models.DateTimeField(verbose_name=b'Last modified time')),
             ],
             options={
@@ -60,7 +61,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='clicklog',
             name='product',
-            field=models.ForeignKey(to='gunmel.Product'),
+            field=models.ForeignKey(to='gunmel.Product', db_index=False),
             preserve_default=True,
         ),
     ]
