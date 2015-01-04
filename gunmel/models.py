@@ -21,6 +21,7 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=9, decimal_places=2, verbose_name="Product Price")
     price_drop = models.IntegerField(verbose_name="Product Price Drop Percentage",
                                      db_index=True, default=0)
+    oos = models.BooleanField(default=False, verbose_name="Product Out of Stock")
     last_modified = models.DateTimeField(verbose_name="Last modified time")
 
     objects = ProductManager()
