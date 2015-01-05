@@ -9,15 +9,15 @@ from gunmel.models import Product, PriceHistory, ClickLog
 def populate_prod_db():
     Product.objects.create(pid=1,url="1",
                                img="1",headline="1",
-                               desc="1",price=5,
+                               price=5,
                                price_drop=3,last_modified=timezone.now())
     Product.objects.create(pid=2,url="2",
                                img="2",headline="2",
-                               desc="2",price=99,
+                               price=99,
                                price_drop=30,last_modified=timezone.now())
     Product.objects.create(pid=3,url="3",
                                img="3",headline="3",
-                               desc="3",price=6,
+                               price=6,
                                price_drop=0,last_modified=timezone.now())
 
 
@@ -34,7 +34,7 @@ class ProductTestCase(TestCase):
 
     def test_clean(self):
         p4 = Product(pid=4, url='4', img='4',
-                    headline='4', desc='4', price=4,
+                    headline='4', price=4,
                     price_drop=101, last_modified=timezone.now())
         try:
             p4.clean()
@@ -43,7 +43,7 @@ class ProductTestCase(TestCase):
             pass
 
         p5 = Product(pid=5, url='5', img='5',
-                    headline='5', desc='5', price=-0.5,
+                    headline='5', price=-0.5,
                     price_drop=10, last_modified=timezone.now())
         try:
             p5.clean()
@@ -52,7 +52,7 @@ class ProductTestCase(TestCase):
             pass
 
         p6 = Product(pid=1, url='6', img='6',
-                    headline='6', desc='6', price=0.5,
+                    headline='6', price=0.5,
                     price_drop=10, last_modified=timezone.now())
         try:
             p6.clean()
@@ -79,7 +79,7 @@ class PriceHistoryTestCase(TestCase):
 
     def test_foreign_key(self):
         p4 = Product(pid=4, url='4', img='4',
-                    headline='4', desc='4', price=4,
+                    headline='4', price=4,
                     price_drop=101, last_modified=timezone.now())
 
         try:
@@ -130,7 +130,7 @@ class ClickLogTestCase(TestCase):
 
     def test_foreign_key(self):
         p4 = Product(pid=4, url='4', img='4',
-                    headline='4', desc='4', price=4,
+                    headline='4', price=4,
                     price_drop=101, last_modified=timezone.now())
 
         try:

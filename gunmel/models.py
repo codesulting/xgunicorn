@@ -17,7 +17,6 @@ class Product(models.Model):
     url = models.URLField(max_length=2000, verbose_name="Product URL")
     img = models.URLField(max_length=2000, verbose_name="Product Image")
     headline = models.CharField(max_length=256)
-    desc = models.TextField(max_length=1024, verbose_name="Product Description")
     vendor = models.CharField(max_length=128)
     price = models.DecimalField(max_digits=9, decimal_places=2, verbose_name="Product Price")
     price_drop = models.IntegerField(verbose_name="Product Price Drop Percentage",

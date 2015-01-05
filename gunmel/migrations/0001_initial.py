@@ -40,7 +40,6 @@ class Migration(migrations.Migration):
                 ('url', models.URLField(max_length=2000, verbose_name=b'Product URL')),
                 ('img', models.URLField(max_length=2000, verbose_name=b'Product Image')),
                 ('headline', models.CharField(max_length=256)),
-                ('desc', models.TextField(max_length=1024, verbose_name=b'Product Description')),
                 ('vendor', models.CharField(max_length=128)),
                 ('price', models.DecimalField(verbose_name=b'Product Price', max_digits=9, decimal_places=2)),
                 ('price_drop', models.IntegerField(default=0, verbose_name=b'Product Price Drop Percentage', db_index=True)),
