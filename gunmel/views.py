@@ -1,8 +1,15 @@
+from django.views.generic import View
 from django.views.generic.detail import DetailView
 from django.core.exceptions import ObjectDoesNotExist
-from django.http import Http404
-from gunmel.models import Product
+from django.http import Http404, HttpResponse
+from django.shortcuts import get_object_or_404
+from matplotlib.backends.backend_agg import FigureCanvasAgg
+from matplotlib.dates import DateFormatter
+from matplotlib.figure import Figure
 import mmh3
+
+from gunmel.models import Product, PriceHistory
+
 
 class PriceHistoryView(DetailView):
 	template_name = 'gunmel/price_history.html'
@@ -32,3 +39,30 @@ class PriceHistoryView(DetailView):
 	def formatted_object_price(self):
 		object = self.get_object()
 		return "%0.2f" % object.price
+
+
+class ChartView(View):
+	def __init__(self, *arg, **kwargs):
+		super(ChartView, self).__init__(*arg, **kwargs)
+
+	def get(self, request, *arg, **kwargs):
+		pk = kwargs.get('pk')
+		product = get_object_or_404(Product, pk=pk)
+
+		history = PriceHistory.objects.price_history(product)
+		dates, prices = zip(* map(lambda entry: (entry.timestamp, float(entry.price)), history))
+
+		response = HttpResponse(content_type='image/png')
+		self.populate(product, dates, prices, response)
+		return response
+
+	def populate(self, product, dates, prices, response):
+		fig = Figure()
+		ax = fig.add_subplot(111)
+		ax.step(dates, prices)
+		ax.xaxis_date()
+		ax.xaxis.set_major_formatter(DateFormatter('%b-%d-%Y'))
+		fig.autofmt_xdate()
+		canvas = FigureCanvasAgg(fig)
+		canvas.print_png(response)
+		

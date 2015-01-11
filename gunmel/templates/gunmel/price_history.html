@@ -21,8 +21,7 @@
 {% block content %}
 <div class="container">
 	<div class="row">
-	</div>
-	<div class="row">	
+		<img src="{% url 'gunmel:history-chart' pk=object.pk %}"/>
 	</div>
 </div>	
 {% endblock content %}
