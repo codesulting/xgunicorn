@@ -16,7 +16,4 @@ def activate_foreign_keys(sender, connection, **kwargs):
 
 @receiver(post_save, sender=Product)
 def add_to_history(instance, created, update_fields, **kwargs):
-    if (created or
-            update_fields is not None and 'price_drop' in update_fields or
-            instance.price_drop > 0):
-        PriceHistory.objects.create(product=instance, price=instance.price, timestamp=timezone.now())
+    PriceHistory.objects.create(product=instance, price=instance.price, timestamp=timezone.now())

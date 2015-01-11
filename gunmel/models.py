@@ -1,5 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.forms.models import model_to_dict
 from decimal import Decimal
 
 
@@ -39,14 +40,25 @@ class Product(models.Model):
     def save(self, **kwargs):
         if Product.objects.filter(pid=self.pid).exists():
             current = Product.objects.get(pid=self.pid)
+            dict_new = model_to_dict(self)
+            dict_current = model_to_dict(current)
+            diff = filter(lambda (k, v): v != dict_new[k] and k != 'last_modified' and k != 'price', dict_current.items())
+
+
             new_price = Decimal("%.2f" % self.price)
             if current.price != new_price:
                 if current.price > new_price:
                     self.price_drop = int((current.price - new_price) / current.price * 100)
+                else:
+                    self.price_drop = 0
+                diff.append('price')
+
+            if len(diff) > 0:
                 self.clean()
                 super(Product, self).save(**kwargs)
 
         else:
+            self.price = Decimal("%.2f" % self.price)
             self.clean()
             super(Product, self).save(**kwargs)
 
