@@ -11,7 +11,7 @@
 			</div>
 			<div class="row">
 				<div class="col-md-2"><p>${{ view.formatted_object_price }}</p></div>
-				<div class="col-md-2"><a href="{{ object.url }}"><p class="text-muted">@{{ object.vendor }}</p></a></div>
+				<div class="col-md-4"><a href="{{ object.url }}"><p>{% if object.oos %}OOS @{% else %}Buy from {% endif %}{{ object.vendor }}</p></a></div>
 			</div>
 		</div>
 	</div>
