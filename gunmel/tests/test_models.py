@@ -84,7 +84,6 @@ class PriceHistoryTestCase(TestCase):
         p1.last_modified = timezone.now()
         p1.save()
 
-        last_modified = p1.last_modified
         p1.price = 100.001
         p1.last_modified = timezone.now()
         p1.save()
@@ -96,6 +95,14 @@ class PriceHistoryTestCase(TestCase):
         p1.save()
         self.assertEquals(len(PriceHistory.objects.price_history(p1)), 4)
 
+        self.assertEquals(PriceHistory.objects.min(p1).price, Decimal("5.55"))
+        self.assertEquals(PriceHistory.objects.max(p1).price, Decimal("100.00"))
+
+        ph1, ph2, ph3, ph4 = PriceHistory.objects.last_n(p1, 4)
+        self.assertEquals(ph1.price, Decimal('100.00'))
+        self.assertEquals(ph2.price, Decimal('50.00'))
+        self.assertEquals(ph3.price, Decimal('50.00'))
+        self.assertEquals(ph4.price, Decimal('5.55'))
 
     def test_foreign_key(self):
         p4 = Product(pid=4, url='4', img='4',

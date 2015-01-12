@@ -57,11 +57,13 @@ class ChartView(View):
 		return response
 
 	def populate(self, product, dates, prices, response):
-		fig = Figure()
+		fig = Figure(frameon=False)
 		ax = fig.add_subplot(111)
 		ax.step(dates, prices)
 		ax.xaxis_date()
 		ax.xaxis.set_major_formatter(DateFormatter('%b-%d-%Y'))
+		ax.grid()
+		ax.set_title(product.headline)
 		fig.autofmt_xdate()
 		canvas = FigureCanvasAgg(fig)
 		canvas.print_png(response)

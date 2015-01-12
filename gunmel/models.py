@@ -70,6 +70,16 @@ class PriceHistoryManager(models.Manager):
     def price_history(self, product):
         return self.get_queryset().filter(product__pid=product.pid)
 
+    def min(self, product):
+        min_price = self.get_queryset().filter(product__pid=product.pid).aggregate(min_price=models.Min('price'))['min_price']
+        return self.get_queryset().filter(product__pid=product.pid).filter(price=min_price)[0]
+
+    def max(self, product):
+        max_price = self.get_queryset().filter(product__pid=product.pid).aggregate(max_price=models.Max('price'))['max_price']
+        return self.get_queryset().filter(product__pid=product.pid).filter(price=max_price)[0]
+
+    def last_n(self, product, n):
+        return self.get_queryset().filter(product__pid=product.pid).order_by('-timestamp')[:n]
 
 class PriceHistory(models.Model):
     product = models.ForeignKey(Product)
