@@ -63,27 +63,33 @@ class ChartView(View):
 	def populate(self, product, history, response):
 
 		date_price_list = map(lambda entry: (entry.timestamp, float(entry.price)), history)
-		min_price_date, min_price = min(date_price_list, key=lambda (timestamp, price): price)
-		max_price_date, max_price = max(date_price_list, key=lambda (timestamp, price): price) 
+
+		min_price_date, min_price = date_price_list[0]
+		for (timestamp, price) in date_price_list[1:]:
+			if price <= min_price:
+				min_price = price
+				min_price_date = timestamp
+
+		max_price_date, max_price = max(date_price_list, key=lambda (timestamp, price): price)
+
+		# append today's date and price for plotting
+		date_price_list.append((timezone.now(), date_price_list[-1][1]))
 		dates, prices = zip(* date_price_list)
 
-		# add current price & date for plotting step line
-		#dates = dates + (timezone.now(), )
-		#prices = prices + (prices[-1], )
 
 		fig = Figure(frameon=False)
+
+		# price history step plot
 		ax = fig.add_subplot(111)
-		ax.step(dates, prices)		
+		ax.step(dates, prices, where='post')		
 		ax.xaxis_date()
 		ax.xaxis.set_major_formatter(DateFormatter('%x'))
 		ax.yaxis.set_major_formatter(FormatStrFormatter('$%d'))
 		ax.grid()
-		#ax.set_xlim(dates[0], dates[-1])
 		ax.set_title(product.headline)
 		fig.autofmt_xdate()
 
-		min_price = min(prices)
-		max_price = max(prices)
+		# min, max lines
 		ax2 = ax.twinx()
 		ax2.axhline(y=min_price, color='g', linestyle='--')
 		ax2.axhline(y=max_price, color='r', linestyle='--')
@@ -91,7 +97,6 @@ class ChartView(View):
 		ax2.yaxis.set_major_locator(FixedLocator([min_price, max_price]))
 		min_price_tick_label_text = '$%0.2f\n%s' % (min_price, min_price_date.strftime('%x'))
 		max_price_tick_label_text = '$%0.2f\n%s' % (max_price, max_price_date.strftime('%x'))
-
 		ax2.set_yticklabels([min_price_tick_label_text, max_price_tick_label_text])
 		min_price_tick_label, max_price_tick_label = ax2.get_yticklabels()
 		min_price_tick_label.set_color('green')

@@ -1,6 +1,7 @@
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.forms.models import model_to_dict
+
 from decimal import Decimal
 
 
@@ -46,6 +47,7 @@ class Product(models.Model):
 
 
             new_price = Decimal("%.2f" % self.price)
+            self.price = new_price
             if current.price != new_price:
                 if current.price > new_price:
                     self.price_drop = int((current.price - new_price) / current.price * 100)
