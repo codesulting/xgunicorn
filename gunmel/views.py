@@ -3,6 +3,8 @@ from django.views.generic.detail import DetailView
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
+
 from matplotlib.backends.backend_agg import FigureCanvasAgg
 from matplotlib.dates import DateFormatter
 from matplotlib.figure import Figure
@@ -65,6 +67,10 @@ class ChartView(View):
 		max_price_date, max_price = max(date_price_list, key=lambda (timestamp, price): price) 
 		dates, prices = zip(* date_price_list)
 
+		# add current price & date for plotting step line
+		#dates = dates + (timezone.now(), )
+		#prices = prices + (prices[-1], )
+
 		fig = Figure(frameon=False)
 		ax = fig.add_subplot(111)
 		ax.step(dates, prices)		
@@ -72,6 +78,7 @@ class ChartView(View):
 		ax.xaxis.set_major_formatter(DateFormatter('%x'))
 		ax.yaxis.set_major_formatter(FormatStrFormatter('$%d'))
 		ax.grid()
+		#ax.set_xlim(dates[0], dates[-1])
 		ax.set_title(product.headline)
 		fig.autofmt_xdate()
 
