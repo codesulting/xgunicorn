@@ -1,0 +1,3 @@
+[submodule "stalker"]
+	path = stalker
+	url = git@github.com:zhenkai/stalker.git
