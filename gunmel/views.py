@@ -41,7 +41,42 @@ class PriceHistoryView(DetailView):
 
 	def formatted_object_price(self):
 		object = self.get_object()
-		return "%0.2f" % object.price
+		return self.format_price(object.price)
+
+	def get_context_data(self, **kwargs):
+		context = super(PriceHistoryView, self).get_context_data(**kwargs)
+		obj = self.get_object()
+		history = PriceHistory.objects.price_history(obj)
+		date_price_list = map(lambda entry: (entry.timestamp, float(entry.price)), history)
+		date_price_list.reverse()
+		min_price_date, min_price = date_price_list[0]
+		for (timestamp, price) in date_price_list[1:]:
+			if price <= min_price:
+				min_price = price
+				min_price_date = timestamp
+
+		max_price_date, max_price = max(date_price_list, key=lambda (timestamp, price): price)
+
+		date_price_list = map(lambda (d, p): (self.format_date(d), self.format_price(p)), date_price_list)
+		if len(date_price_list) < 5:
+			last_five = date_price_list + [('N/A', 'N/A')] * (5 - len(date_price_list))
+		else:
+			last_five = date_price_list[:5]
+
+		context['max_price'] = self.format_price(max_price)
+		context['max_price_date'] = self.format_date(max_price_date)
+		context['min_price'] = self.format_price(min_price)
+		context['min_price_date'] = self.format_date(min_price_date)
+
+		context['last_five'] = last_five
+
+		return context
+
+	def format_price(self, price):
+		return "%0.2f" % price
+
+	def format_date(self, date):
+		return date.strftime('%m/%d/%Y')
 
 
 class ChartView(View):

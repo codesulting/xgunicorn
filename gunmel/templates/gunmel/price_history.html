@@ -21,7 +21,55 @@
 {% block content %}
 <div class="container">
 	<div class="row">
-		<img src="{% url 'gunmel:history-chart' pk=object.pk %}"/>
+		<div class="col-md-6">
+			<img src="{% url 'gunmel:history-chart' pk=object.pk %}"/>
+		</div>
+		<div class="col-md-1"></div>
+		<div class="col-md-5">
+			<div class="row">
+				<table class="table table-striped">
+					<thead>
+        				<tr class="active">
+          					<th>#</th>
+          					<th>Price</th>
+         					<th>When</th>
+        				</tr>
+      				</thead>
+      				<tbody>
+						<tr class="danger">
+							<td>Highest</td>
+							<td>${{ max_price }}</td>
+							<td>{{ max_price_date }}</td>
+						</tr>
+						<tr class="success">
+							<td>Lowest</td>
+							<td>${{ min_price }}</td>
+							<td>{{ min_price_date }}</td>
+						</tr>
+      				</tbody>
+				</table>
+			</div>
+			<div class="row">
+			</div>
+			<div class="row">
+				<table class="table table-striped">
+					<thead>
+        				<tr>
+          					<th>Last 5 Price Change</th>
+          					<th></th>
+        				</tr>
+      				</thead>
+      				<tbody>
+						{% for price_date, price in last_five %}
+						<tr>
+							<th>${{ price }}</th>
+							<th>{{ price_date }}</th>
+						</tr>
+						{% endfor %}
+      				</tbody>
+				</table>
+			</div>
+		</div>
 	</div>
 </div>	
 {% endblock content %}
