@@ -1,7 +1,7 @@
-from django.contrib.auth.forms import AuthenticationForm
-from django import forms
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Button, Submit, Div, Field, MultiField
+from crispy_forms.layout import Layout, Submit, Div, ButtonHolder
+
 
 class LoginForm(AuthenticationForm):
     def __init__(self, *args, **kwargs):
@@ -9,10 +9,24 @@ class LoginForm(AuthenticationForm):
 
         self.helper = FormHelper()
         self.helper.layout = Layout(
-            Div('email', css_class='form-group'),
+            Div('username', css_class='form-group'),
             Div('password', css_class='form-group'),
             ButtonHolder(
                 Submit('login', 'Login', css_class='btn-primary')
+            )
+        )
+
+
+class SignUpForm(UserCreationForm):
+    def __init__(self, *args, **kwargs):
+        super(SignUpForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            'username',
+            'password1',
+            'password2',
+            ButtonHolder(
+                Submit('signup', 'Sign Up', css_class='btn-primary')
             )
         )
 

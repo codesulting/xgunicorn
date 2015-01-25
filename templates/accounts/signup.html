@@ -1,0 +1,14 @@
+{% extends '_layouts/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+    Sign Up | {{ block.super }}
+{% endblock title %}
+
+{% block headline %}
+	Sign Up for xGunicorn
+{% endblock headline %}
+
+{% block content %}
+{% crispy form %}
+{% endblock content %}
